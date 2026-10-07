@@ -69,3 +69,20 @@ func (ms *ModelSuite) Test_Task_Toggle_Persists() {
 	ms.NoError(ms.DB.Find(reloaded, task.ID))
 	ms.True(reloaded.Completed)
 }
+
+func (ms *ModelSuite) Test_Task_Update_EmptyTitle_Invalid() {
+	task := &Task{Title: "Título original"}
+	verrs, err := ms.DB.ValidateAndCreate(task)
+	ms.NoError(err)
+	ms.False(verrs.HasAny())
+
+	task.Title = ""
+	verrs, err = ms.DB.ValidateAndUpdate(task)
+	ms.NoError(err)
+	ms.True(verrs.HasAny())
+	ms.Contains(verrs.Get("title"), "El título es obligatorio.")
+
+	reloaded := &Task{}
+	ms.NoError(ms.DB.Find(reloaded, task.ID))
+	ms.Equal("Título original", reloaded.Title)
+}
