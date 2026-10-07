@@ -5,3 +5,4 @@ Dockerfile
 compose.yaml
 .devcontainer
 .github
+e2e/
